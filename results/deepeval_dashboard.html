@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DeepEval Local RAG Experiment Dashboard</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --panel-soft: #eef3f8;
+      --ink: #18212f;
+      --muted: #5e6b7a;
+      --line: #d8dee8;
+      --blue: #2f6fbb;
+      --green: #2f8f6f;
+      --red: #c44949;
+      --gold: #b7831f;
+      --teal: #287f8f;
+      --violet: #6458a6;
+      --shadow: 0 16px 40px rgba(26, 35, 50, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    .shell {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 40px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+      gap: 24px;
+      align-items: stretch;
+      margin-bottom: 24px;
+    }
+
+    .hero-main,
+    .hero-side,
+    .panel,
+    .metric,
+    .timeline-step,
+    .case-row,
+    .takeaway {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      padding: 28px;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .kicker {
+      margin: 0 0 10px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin-bottom: 14px;
+      font-size: clamp(34px, 5vw, 62px);
+      line-height: 1.03;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 16px;
+      font-size: 22px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 720px;
+      margin-bottom: 26px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .status-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 32px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+      white-space: normal;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex: 0 0 auto;
+    }
+
+    .dot.red {
+      background: var(--red);
+    }
+
+    .dot.green {
+      background: var(--green);
+    }
+
+    .dot.gold {
+      background: var(--gold);
+    }
+
+    .hero-side {
+      padding: 22px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .stack-item {
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .stack-item:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .value {
+      margin-top: 4px;
+      font-size: 16px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid.two {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .grid.four {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .panel {
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+
+    .metric {
+      padding: 18px;
+      min-height: 182px;
+      display: grid;
+      gap: 12px;
+      box-shadow: none;
+    }
+
+    .metric-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .metric-name {
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .metric-score {
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .score-ring {
+      width: 72px;
+      height: 72px;
+      flex: 0 0 72px;
+    }
+
+    .threshold {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .bar-track {
+      height: 12px;
+      border-radius: 8px;
+      background: #e5e9f1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 8px;
+      background: var(--blue);
+    }
+
+    .bar-target {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 70%;
+      width: 2px;
+      background: #1c2430;
+      opacity: 0.55;
+    }
+
+    .metric-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .timeline-step {
+      padding: 16px;
+      box-shadow: none;
+      min-height: 190px;
+      border-top: 5px solid var(--blue);
+    }
+
+    .timeline-step.problem {
+      border-top-color: var(--red);
+    }
+
+    .timeline-step.pivot {
+      border-top-color: var(--gold);
+    }
+
+    .timeline-step.done {
+      border-top-color: var(--green);
+    }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      background: var(--panel-soft);
+      color: var(--ink);
+      font-weight: 900;
+    }
+
+    .step-text {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .chart-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+      gap: 22px;
+      align-items: center;
+    }
+
+    .axis {
+      display: grid;
+      gap: 14px;
+    }
+
+    .chart-row {
+      display: grid;
+      grid-template-columns: 156px minmax(0, 1fr) 54px;
+      gap: 12px;
+      align-items: center;
+      min-height: 32px;
+    }
+
+    .chart-label {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .chart-score {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      font-weight: 800;
+      text-align: right;
+    }
+
+    .threshold-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .case-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .case-row {
+      display: grid;
+      grid-template-columns: minmax(240px, 1.2fr) repeat(4, minmax(90px, 0.5fr));
+      gap: 12px;
+      align-items: stretch;
+      padding: 12px;
+      box-shadow: none;
+    }
+
+    .case-question {
+      min-width: 0;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .case-question span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .heat {
+      display: grid;
+      place-items: center;
+      min-height: 58px;
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .heat small {
+      display: block;
+      font-size: 10px;
+      font-weight: 800;
+      opacity: 0.9;
+    }
+
+    .heat.na {
+      background: #8b95a3;
+    }
+
+    .heat.low {
+      background: var(--red);
+    }
+
+    .heat.mid {
+      background: var(--gold);
+    }
+
+    .heat.high {
+      background: var(--green);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .takeaway {
+      padding: 16px;
+      min-height: 148px;
+      box-shadow: none;
+      border-left: 5px solid var(--teal);
+    }
+
+    .takeaway.warn {
+      border-left-color: var(--gold);
+    }
+
+    .takeaway.fail {
+      border-left-color: var(--red);
+    }
+
+    .takeaway.good {
+      border-left-color: var(--green);
+    }
+
+    .takeaway p,
+    .timeline-step p {
+      margin-bottom: 0;
+    }
+
+    .model-ladder {
+      display: grid;
+      gap: 10px;
+    }
+
+    .model-row {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr) 96px;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .model-row:last-child {
+      border-bottom: 0;
+    }
+
+    .tag {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .tag.fail {
+      background: var(--red);
+    }
+
+    .tag.warn {
+      background: var(--gold);
+    }
+
+    .tag.good {
+      background: var(--green);
+    }
+
+    .source-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 8px 0 0;
+    }
+
+    code {
+      padding: 2px 5px;
+      border-radius: 6px;
+      background: #e8edf4;
+      color: #243043;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.95em;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .grid.two,
+      .chart-wrap,
+      .split {
+        grid-template-columns: 1fr;
+      }
+
+      .grid.four,
+      .timeline {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .case-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100vw - 20px, 1180px);
+        padding-top: 12px;
+      }
+
+      .hero-main,
+      .hero-side,
+      .panel {
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      .grid.four,
+      .timeline,
+      .case-row,
+      .model-row,
+      .chart-row {
+        grid-template-columns: 1fr;
+      }
+
+      .chart-score {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-main">
+        <div>
+          <p class="kicker">LightRAG x DeepEval local experiment</p>
+          <h1>From full local RAG benchmark to a reliable DeepEval smoke dashboard</h1>
+          <p class="lead">
+            The full graph build hit local model runtime limits, so the experiment pivoted to a one-document,
+            vector-only demo that still shows how DeepEval scores answer quality, retrieval quality, grounding,
+            and refusal behavior.
+          </p>
+        </div>
+        <div class="status-strip">
+          <span class="pill"><span class="dot red"></span>Full graph benchmark blocked</span>
+          <span class="pill"><span class="dot green"></span>Smoke demo complete</span>
+          <span class="pill"><span class="dot gold"></span>Local judge caveats captured</span>
+        </div>
+      </div>
+
+      <aside class="hero-side" aria-label="Experiment stack">
+        <div class="stack-item">
+          <div class="label">Corpus used for demo</div>
+          <div class="value">1 doc: <code>docs/doc_02.md</code></div>
+        </div>
+        <div class="stack-item">
+          <div class="label">Retrieval mode</div>
+          <div class="value">LightRAG vector-only naive index</div>
+        </div>
+        <div class="stack-item">
+          <div class="label">Embedding model</div>
+          <div class="value"><code>nomic-embed-text</code>, 768 dim</div>
+        </div>
+        <div class="stack-item">
+          <div class="label">Local judge</div>
+          <div class="value"><code>llama3.2:1b</code> through Ollama</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid four" aria-label="Topline metric cards">
+      <article class="metric">
+        <div class="metric-top">
+          <div>
+            <div class="metric-name">Answer Relevancy</div>
+            <div class="metric-score">0.611</div>
+          </div>
+          <svg class="score-ring" viewBox="0 0 42 42" aria-label="Answer Relevancy 0.611">
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#e4e9f1" stroke-width="5"></circle>
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#2f6fbb" stroke-width="5" stroke-dasharray="61.1 38.9" stroke-dashoffset="25" stroke-linecap="round"></circle>
+          </svg>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width:61.1%; background:var(--blue)"></div><div class="bar-target"></div></div>
+        <p class="metric-note">Responses were relevant, but not enough to clear DeepEval's 0.70 pass threshold.</p>
+        <div class="threshold">Pass threshold: 0.70</div>
+      </article>
+
+      <article class="metric">
+        <div class="metric-top">
+          <div>
+            <div class="metric-name">Contextual Relevancy</div>
+            <div class="metric-score">0.278</div>
+          </div>
+          <svg class="score-ring" viewBox="0 0 42 42" aria-label="Contextual Relevancy 0.278">
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#e4e9f1" stroke-width="5"></circle>
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#c44949" stroke-width="5" stroke-dasharray="27.8 72.2" stroke-dashoffset="25" stroke-linecap="round"></circle>
+          </svg>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width:27.8%; background:var(--red)"></div><div class="bar-target"></div></div>
+        <p class="metric-note">The retrieved context was noisy for the questions, especially the adversarial one.</p>
+        <div class="threshold">Pass threshold: 0.70</div>
+      </article>
+
+      <article class="metric">
+        <div class="metric-top">
+          <div>
+            <div class="metric-name">Faithfulness</div>
+            <div class="metric-score">0.667</div>
+          </div>
+          <svg class="score-ring" viewBox="0 0 42 42" aria-label="Faithfulness 0.667">
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#e4e9f1" stroke-width="5"></circle>
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#b7831f" stroke-width="5" stroke-dasharray="66.7 33.3" stroke-dashoffset="25" stroke-linecap="round"></circle>
+          </svg>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width:66.7%; background:var(--gold)"></div><div class="bar-target"></div></div>
+        <p class="metric-note">Grounding was close to passing, with over-explanation and one wrong answer dragging it down.</p>
+        <div class="threshold">Pass threshold: 0.70</div>
+      </article>
+
+      <article class="metric">
+        <div class="metric-top">
+          <div>
+            <div class="metric-name">Refusal Pattern</div>
+            <div class="metric-score">1.000</div>
+          </div>
+          <svg class="score-ring" viewBox="0 0 42 42" aria-label="Refusal Pattern 1.000">
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#e4e9f1" stroke-width="5"></circle>
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#2f8f6f" stroke-width="5" stroke-dasharray="100 0" stroke-dashoffset="25" stroke-linecap="round"></circle>
+          </svg>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width:100%; background:var(--green)"></div><div class="bar-target"></div></div>
+        <p class="metric-note">The adversarial question correctly produced an "I do not have enough information" style answer.</p>
+        <div class="threshold">Pass threshold: 1.00</div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>Experiment Story</h2>
+      <div class="timeline">
+        <article class="timeline-step">
+          <div class="step-num">1</div>
+          <h3>Original benchmark</h3>
+          <p class="step-text">Build a full LightRAG index over the corpus, then run handcrafted and synthesized DeepEval suites.</p>
+        </article>
+        <article class="timeline-step problem">
+          <div class="step-num">2</div>
+          <h3>Local bottlenecks</h3>
+          <p class="step-text">OpenAI quota blocked cloud ingest. Qwen embeddings timed out locally. Nomic embeddings worked, then Granite graph extraction timed out.</p>
+        </article>
+        <article class="timeline-step pivot">
+          <div class="step-num">3</div>
+          <h3>Scope pivot</h3>
+          <p class="step-text">The goal became a metric demo, so the run moved to one document, vector-only retrieval, and one metric at a time.</p>
+        </article>
+        <article class="timeline-step done">
+          <div class="step-num">4</div>
+          <h3>Demo complete</h3>
+          <p class="step-text">DeepEval now reports useful scores and exposes a concrete story: decent answers, weak context, near-pass grounding, strong refusal behavior.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Metric Comparison</h2>
+      <div class="chart-wrap">
+        <div class="axis" aria-label="Average metric bar chart">
+          <div class="chart-row">
+            <div class="chart-label">Answer Relevancy</div>
+            <div class="bar-track"><div class="bar-fill" style="width:61.1%; background:var(--blue)"></div><div class="bar-target"></div></div>
+            <div class="chart-score">0.611</div>
+          </div>
+          <div class="chart-row">
+            <div class="chart-label">Contextual Relevancy</div>
+            <div class="bar-track"><div class="bar-fill" style="width:27.8%; background:var(--red)"></div><div class="bar-target"></div></div>
+            <div class="chart-score">0.278</div>
+          </div>
+          <div class="chart-row">
+            <div class="chart-label">Faithfulness</div>
+            <div class="bar-track"><div class="bar-fill" style="width:66.7%; background:var(--gold)"></div><div class="bar-target"></div></div>
+            <div class="chart-score">0.667</div>
+          </div>
+          <div class="chart-row">
+            <div class="chart-label">Refusal Pattern</div>
+            <div class="bar-track"><div class="bar-fill" style="width:100%; background:var(--green)"></div><div class="bar-target"></div></div>
+            <div class="chart-score">1.000</div>
+          </div>
+          <div class="threshold-note">Black marker shows the 0.70 threshold used by the LLM-judged metrics. Refusal Pattern uses a deterministic 1.00 threshold.</div>
+        </div>
+        <div class="takeaway warn">
+          <h3>What the scores mean</h3>
+          <p class="step-text">
+            This was not a polished RAG system trying to maximize score. It was a diagnostic slice. The useful result is the pattern:
+            answers are often relevant and somewhat faithful, but the vector-only context is too broad and the second answer hallucinated ASL-4 instead of the ASL-3 deployment commitment.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Case-Level Heatmap</h2>
+      <div class="case-grid">
+        <div class="case-row" aria-label="ASL-3 definition case">
+          <div class="case-question">ASL-3 definition<span>Answerable case</span></div>
+          <div class="heat mid">0.667<small>Answer rel.</small></div>
+          <div class="heat low">0.333<small>Context rel.</small></div>
+          <div class="heat mid">0.667<small>Faithfulness</small></div>
+          <div class="heat na">N/A<small>Refusal</small></div>
+        </div>
+        <div class="case-row" aria-label="ASL-3 deployment case">
+          <div class="case-question">ASL-3 deployment commitment<span>Answerable case with a wrong generated answer</span></div>
+          <div class="heat mid">0.667<small>Answer rel.</small></div>
+          <div class="heat mid">0.500<small>Context rel.</small></div>
+          <div class="heat mid">0.667<small>Faithfulness</small></div>
+          <div class="heat na">N/A<small>Refusal</small></div>
+        </div>
+        <div class="case-row" aria-label="Claude Opus 5 release date adversarial case">
+          <div class="case-question">Claude Opus 5 release date<span>Adversarial case, not in source document</span></div>
+          <div class="heat low">0.500<small>Answer rel.</small></div>
+          <div class="heat low">0.000<small>Context rel.</small></div>
+          <div class="heat mid">0.667<small>Faithfulness</small></div>
+          <div class="heat high">1.000<small>Refusal</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid two">
+      <article class="panel">
+        <h2>Model Path</h2>
+        <div class="model-ladder">
+          <div class="model-row">
+            <strong>OpenAI path</strong>
+            <span class="step-text">Initial cloud-backed ingest could not continue because the account hit quota limits.</span>
+            <span class="tag fail">blocked</span>
+          </div>
+          <div class="model-row">
+            <strong>Qwen 4B embed</strong>
+            <span class="step-text">Correct dimension found, but LightRAG embedding workers timed out.</span>
+            <span class="tag fail">timeout</span>
+          </div>
+          <div class="model-row">
+            <strong>Qwen 0.6B embed</strong>
+            <span class="step-text">Smaller model still timed out under the local worker limits.</span>
+            <span class="tag fail">timeout</span>
+          </div>
+          <div class="model-row">
+            <strong>Nomic embed</strong>
+            <span class="step-text">768-dim embeddings worked, but full graph extraction with Granite remained too slow.</span>
+            <span class="tag warn">partial</span>
+          </div>
+          <div class="model-row">
+            <strong>Smoke demo</strong>
+            <span class="step-text">One-doc vector-only index plus focused DeepEval metrics produced usable demo scores.</span>
+            <span class="tag good">done</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2>Demo Takeaways</h2>
+        <div class="grid">
+          <div class="takeaway good">
+            <h3>DeepEval loop works locally</h3>
+            <p class="step-text">Focused metrics can complete with Ollama when each run is small and context is capped.</p>
+          </div>
+          <div class="takeaway fail">
+            <h3>Retrieval quality is the weak point</h3>
+            <p class="step-text">Contextual Relevancy averaged 0.278, showing the vector-only smoke index is useful for demos but not production evaluation.</p>
+          </div>
+          <div class="takeaway warn">
+            <h3>Judge choice matters</h3>
+            <p class="step-text">The tiny local judge can score RAG metrics, but it may emit malformed JSON or misjudge GEval refusal prompts.</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>Artifacts Behind This Dashboard</h2>
+      <ul class="source-list">
+        <li><code>results/demo_scores_summary.json</code> and <code>results/demo_scores_summary.md</code></li>
+        <li><code>results/demo_answer_relevancy_scores.json</code></li>
+        <li><code>results/demo_contextual_relevancy_scores.json</code></li>
+        <li><code>results/demo_faithfulness_scores.json</code></li>
+        <li><code>results/demo_refusal_pattern_scores.json</code></li>
+        <li><code>learner.md</code> records the completed runs, failures, and local-judge caveats.</li>
+      </ul>
+    </section>
+
+    <p class="footer">Generated from the May 25, 2026 smoke demo results. Full graph/corpus Phase 2 remains incomplete.</p>
+  </main>
+</body>
+</html>

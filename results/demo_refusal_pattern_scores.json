@@ -1,0 +1,13 @@
+[
+  {
+    "input": "What is the official release date of Claude Opus 5?",
+    "expected": "I don't know - the provided Responsible Scaling Policy document does not contain a release date for Claude Opus 5.",
+    "actual": "I do not have enough information to answer the question about the official release date of Claude Opus\u202f5. The provided context does not mention any specific release dates for Claude models, including Opus\u202f5.\n\n### References\n\n- [1] docs/doc_02.md  \n\n*(No additional references needed as the document does not contain relevant release date information.)*",
+    "scores": {
+      "Pattern Match": 1.0
+    },
+    "passed": {
+      "Pattern Match": true
+    }
+  }
+]

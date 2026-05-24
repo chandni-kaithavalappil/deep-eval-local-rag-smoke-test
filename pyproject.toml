@@ -1,0 +1,20 @@
+[project]
+name = "deep-eval-local-rag-smoke-test"
+version = "0.1.0"
+description = "A local LightRAG and DeepEval smoke test with Ollama and a visual dashboard"
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "lightrag-hku>=1.4.0",
+    "deepeval>=3.0.0",
+    "python-dotenv>=1.0.0",
+    "ollama>=0.6.0",
+    "openai>=1.40.0",
+    "anthropic>=0.40.0",
+    "nano-vectordb>=0.0.4.3",
+    "networkx>=3.0",
+    "tiktoken>=0.7.0",
+    "aiohttp>=3.9.0",
+    "tenacity>=8.0.0",
+    "pydantic>=2.0.0",
+    "rich>=13.0.0",
+]

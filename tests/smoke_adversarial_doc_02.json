@@ -1,0 +1,7 @@
+[
+  {
+    "bucket": "adversarial",
+    "question": "What is the official release date of Claude Opus 5?",
+    "expected": "I don't know - the provided Responsible Scaling Policy document does not contain a release date for Claude Opus 5."
+  }
+]

@@ -1,0 +1,47 @@
+[
+  {
+    "bucket": "easy",
+    "question": "What does Anthropic's Responsible Scaling Policy define as ASL-3?",
+    "expected": "ASL-3 (AI Safety Level 3) refers to AI systems that show early signs of catastrophic capabilities or could substantially uplift malicious actors seeking weapons of mass destruction. Anthropic commits to specific safety and security measures before deploying or training such systems."
+  },
+  {
+    "bucket": "easy",
+    "question": "What is Constitutional AI according to Anthropic?",
+    "expected": "Constitutional AI is Anthropic's method of training AI models using a set of guiding principles (a 'constitution') and self-supervision — the model critiques and revises its own outputs against the constitution rather than relying solely on human feedback for every example."
+  },
+  {
+    "bucket": "easy",
+    "question": "What is the main idea behind Claude's harmlessness training?",
+    "expected": "Anthropic trains Claude to be helpful, harmless, and honest by combining human feedback with AI self-critique against a constitution of principles, so that the model learns to refuse or qualify responses that could cause harm."
+  },
+  {
+    "bucket": "easy",
+    "question": "What does Anthropic mean by 'interpretability research'?",
+    "expected": "Interpretability research at Anthropic aims to understand the internal workings of neural networks — identifying features, circuits, and computational structures inside models so that humans can audit what a model is actually doing rather than treating it as a black box."
+  },
+  {
+    "bucket": "hard",
+    "question": "How does Constitutional AI relate to the principles described in Claude's system card?",
+    "expected": "Both share the same foundation: a written set of principles that guide model behavior. Constitutional AI is the training technique that bakes those principles into the model via self-critique, and the system card documents the resulting behaviors, capabilities, and known limitations of the trained Claude model."
+  },
+  {
+    "bucket": "hard",
+    "question": "Trace how Anthropic moves from a safety policy commitment to a concrete training decision.",
+    "expected": "Anthropic translates safety commitments (e.g., the Responsible Scaling Policy's capability thresholds) into evaluations that probe for those capabilities; if a model crosses an ASL threshold during pre-deployment evals, training and deployment decisions (model release, additional safeguards, red-teaming) are gated on meeting the corresponding ASL safety measures."
+  },
+  {
+    "bucket": "hard",
+    "question": "What role does red-teaming play in Anthropic's safety stack, and how does it connect to interpretability work?",
+    "expected": "Red-teaming probes models for harmful behaviors and capability uplift in adversarial settings, generating failure cases that motivate both training-time mitigations (constitutional principles, RLHF) and interpretability investigations into why the model produced the unsafe output, closing the loop between adversarial discovery and mechanistic understanding."
+  },
+  {
+    "bucket": "adversarial",
+    "question": "What is the official release date of Claude Opus 5?",
+    "expected": "I don't know — the provided documents do not contain a release date for Claude Opus 5."
+  },
+  {
+    "bucket": "adversarial",
+    "question": "How many employees did Anthropic have on January 1st, 2027?",
+    "expected": "I don't know — the provided documents do not contain Anthropic's headcount on that date."
+  }
+]

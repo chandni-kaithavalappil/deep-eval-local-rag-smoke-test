@@ -1,0 +1,35 @@
+[
+  {
+    "input": "What does Anthropic's Responsible Scaling Policy define as ASL-3?",
+    "expected": "ASL-3 refers to systems that substantially increase the risk of catastrophic misuse compared to non-AI baselines, such as search engines or textbooks, or that show low-level autonomous capabilities.",
+    "actual": "According to the context, Anthropic's Responsible Scaling Policy (RSP) defines ASL-3 as \"substantially increase the risk of catastrophic misuse compared to non-AI baselines (e.g., search engines or textbooks)\".\n\nIn more detail, ASL-3 is described in the context as a measure that includes stricter standards for ensuring the safety and security of AI models. It implies that ASL-3 requires an even higher level of caution and rigorous evaluation compared to existing levels (ASL-2), which currently represents Anthropic's current safety and security standards.\n\nThe ASL system, as outlined in the RSP document, includes several key features and requirements for each ASL level:\n\n* ASL-1: No meaningful catastrophic risk\n* ASL-2: Early signs of dangerous capabilities (e.g., ability to give instructions on how to build bioweapons) but insufficient reliability or lack of useful information\n* ASL-3: Substantially increase the risk of catastrophic misuse compared to non-AI baselines, requiring intense research and engineering effort to comply with in time\n\nThe specific requirements for ASL-3 are not detailed in the provided context, but based on the description of ASL-3 as a measure that includes \"stricter standards\" and requires \"intense research and engineering effort\" to comply with, it is likely that ASL-3 would involve additional stringent evaluation procedures, higher safety measures, and more rigorous testing protocols.",
+    "scores": {
+      "Answer Relevancy": 0.6666666666666666
+    },
+    "passed": {
+      "Answer Relevancy": false
+    }
+  },
+  {
+    "input": "What does Anthropic say it will do before deploying ASL-3 models with meaningful catastrophic misuse risk?",
+    "expected": "Anthropic says ASL-3 measures include a commitment not to deploy ASL-3 models if they show any meaningful catastrophic misuse risk under adversarial testing by world-class red-teamers.",
+    "actual": "According to the text, Anthropic plans to develop ASL-4 models (the highest level of safety) before deploying them with meaningful catastrophic misuse risk. This is stated in the following sentence:\n\n\"ASL-4 and higher (ASL-5+) is not yet defined as it is too far from present systems, but will likely involve qualitative escalations in catastrophic misuse potential and autonomy.\"\n\nSpecifically, Anthropic mentions that they plan to create methods of assurance for unsolved research problems such as using interpretability methods to demonstrate mechanistically that a model is unlikely to engage in certain catastrophic behaviors.",
+    "scores": {
+      "Answer Relevancy": 0.6666666666666666
+    },
+    "passed": {
+      "Answer Relevancy": false
+    }
+  },
+  {
+    "input": "What is the official release date of Claude Opus 5?",
+    "expected": "I don't know - the provided Responsible Scaling Policy document does not contain a release date for Claude Opus 5.",
+    "actual": "I do not have enough information to answer the question about the official release date of Claude Opus\u202f5. The provided context does not mention any specific release dates for Claude models, including Opus\u202f5.\n\n### References\n\n- [1] docs/doc_02.md  \n\n*(No additional references needed as the document does not contain relevant release date information.)*",
+    "scores": {
+      "Answer Relevancy": 0.5
+    },
+    "passed": {
+      "Answer Relevancy": false
+    }
+  }
+]
