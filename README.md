@@ -14,6 +14,12 @@ local model runtime limits became the story:
 
 ## Dashboard
 
+GitHub Pages:
+
+```text
+https://chandni-kaithavalappil.github.io/deep-eval-local-rag-smoke-test/
+```
+
 Open the standalone dashboard:
 
 ```text

@@ -48,6 +48,7 @@
 - Worked on 2026-05-25: generated consolidated demo artifacts `results/demo_scores_summary.json` and `results/demo_scores_summary.md`.
 - Worked on 2026-05-25: created a self-contained visual dashboard at `results/deepeval_dashboard.html` that tells the full experiment story: original full LightRAG goal, local timeout/quota blockers, one-doc vector-only pivot, model path, metric cards, case heatmap, and demo takeaways. Verified desktop and mobile render through a temporary local static server; no horizontal overflow after adding wrapping rules for inline code and labels.
 - Worked on 2026-05-25: packaged the public GitHub repo as `chandni-kaithavalappil/deep-eval-local-rag-smoke-test`. Curated commit includes source, docs, prompts, tests, smoke dashboard, summary score artifacts, `.env.example`, `uv.lock`, and this learning log. Excluded `.env`, local caches, virtualenv, `.deepeval`, generated `rag_storage*`, old verbose logs, and unrelated LinkedIn draft artifacts.
+- Worked on 2026-05-25: added GitHub Pages support for the dashboard. Root `index.html` redirects to `results/deepeval_dashboard.html`, and `.github/workflows/pages.yml` deploys a small `_site` bundle containing only the landing redirect, dashboard HTML, and score artifacts. Expected URL: `https://chandni-kaithavalappil.github.io/deep-eval-local-rag-smoke-test/`.
 - Worked: `ollama pull llama3.2:1b` installed a smaller local model for smoke answer generation/judging experiments.
 - Abandoned slow graph smoke ingest: one-doc `docs/doc_02.md` ingest with `MAX_ASYNC=1`, `MAX_PARALLEL_INSERT=1`, and `LLM_TIMEOUT=900` still stayed in Granite entity extraction for many minutes; archived partial storage as `rag_storage_smoke_graph_abandoned_20260517_195420/`.
 - Worked: `UV_CACHE_DIR="$PWD/.uv-cache" uv venv --python 3.11`
@@ -93,6 +94,11 @@
   Mistake / Gap: The workspace contained many local-only artifacts that should not be public, including `.env`, caches, venv, `.deepeval`, generated vector stores, failed ingest stores, and old logs.
   Correction: Rewrote `.gitignore`, updated README and `.env.example` for the working smoke path, added `src/build_demo_summary.py`, refreshed `uv.lock`, initialized git, staged only the curated public files, and left unrelated LinkedIn files untracked.
   Future Rule: Public commits for this project should stay focused on reproducible source/data/results and exclude runtime artifacts unless explicitly needed for a release.
+
+- Situation: User wanted the HTML dashboard made into GitHub Pages.
+  Mistake / Gap: The repo had a standalone dashboard under `results/`, but no Pages entrypoint or deployment config.
+  Correction: Added root `index.html` as the Pages entrypoint and a GitHub Actions Pages workflow that deploys a minimal `_site` bundle. README now includes the expected Pages URL.
+  Future Rule: Keep GitHub Pages publishing limited to dashboard-facing artifacts, not the entire repo tree.
 
 - Situation: Small local Ollama judges can emit malformed structured JSON for context-heavy DeepEval metrics.
   Mistake / Gap: Contextual Relevancy initially used the full retrieval context and failed with truncated JSON.
