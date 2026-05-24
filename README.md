@@ -20,6 +20,16 @@ GitHub Pages:
 https://chandni-kaithavalappil.github.io/deep-eval-local-rag-smoke-test/
 ```
 
+If the URL returns 404 after pushing, enable it in GitHub:
+
+```text
+Repository Settings -> Pages -> Build and deployment
+Source: Deploy from a branch
+Branch: gh-pages
+Folder: / (root)
+Save
+```
+
 Open the standalone dashboard:
 
 ```text
